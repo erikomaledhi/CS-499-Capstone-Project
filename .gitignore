@@ -1,0 +1,40 @@
+# Environment Variables - NEVER commit these!
+.env
+.env.local
+.env.production
+**/.env
+**/.env.local
+**/.env.production
+
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Logs
+*.log
+npm-debug.log*
+logs/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+venv/
+env/
+
+# Build outputs
+build/
+dist/
+*.egg-info/

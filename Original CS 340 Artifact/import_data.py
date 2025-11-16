@@ -4,11 +4,17 @@ Script to import CSV data into local MongoDB database
 import pandas as pd
 from pymongo import MongoClient
 import sys
+import numpy as np
+
+# Get CSV file path from command line argument or use default
+csv_file = sys.argv[1] if len(sys.argv) > 1 else 'aac_shelter_outcomes.csv'
 
 # Read the CSV file
 print("Reading CSV file...")
 try:
-    df = pd.read_csv('aac_shelter_outcomes.csv')
+    df = pd.read_csv(csv_file)
+    # Replace NaN values with empty strings to avoid 'nan' strings in database
+    df = df.replace({np.nan: ''})
     print(f"Successfully loaded {len(df)} records from CSV")
 except Exception as e:
     print(f"Error reading CSV: {e}")
