@@ -1,42 +1,53 @@
-import React, { useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Paper, Typography, Box } from '@mui/material';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+import animalService from '../services/animalService';
 
 const COLORS = [
   '#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8',
   '#82CA9D', '#FFC658', '#FF6B9D', '#9C27B0', '#4CAF50'
 ];
 
-const BreedChart = ({ animals }) => {
-  const chartData = useMemo(() => {
-    if (!animals || animals.length === 0) return [];
+const BreedChart = () => {
+  const [chartData, setChartData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [totalAnimals, setTotalAnimals] = useState(0);
 
-    // Count breeds
-    const breedCounts = {};
-    animals.forEach((animal) => {
-      const breed = animal.breed || 'Unknown';
-      breedCounts[breed] = (breedCounts[breed] || 0) + 1;
-    });
+  useEffect(() => {
+    const fetchBreedCounts = async () => {
+      try {
+        setLoading(true);
+        const response = await animalService.getBreedCounts(10);
+        const breeds = response.data.breeds;
+        const total = response.data.totalAnimals;
 
-    // Convert to array and sort by count
-    const data = Object.entries(breedCounts)
-      .map(([breed, count]) => ({
-        name: breed.length > 25 ? breed.substring(0, 22) + '...' : breed,
-        fullName: breed,
-        value: count,
-        percentage: 0
-      }))
-      .sort((a, b) => b.value - a.value)
-      .slice(0, 10); // Top 10 breeds
+        const data = breeds.map(item => ({
+          name: item.breed.length > 25 ? item.breed.substring(0, 22) + '...' : item.breed,
+          fullName: item.breed,
+          value: item.count,
+          percentage: ((item.count / total) * 100).toFixed(1)
+        }));
 
-    // Calculate percentages
-    const total = animals.length;
-    data.forEach(item => {
-      item.percentage = ((item.value / total) * 100).toFixed(1);
-    });
+        setChartData(data);
+        setTotalAnimals(total);
+      } catch (error) {
+        console.error('Error fetching breed counts:', error);
+        setChartData([]);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    return data;
-  }, [animals]);
+    fetchBreedCounts();
+  }, []);
+
+  if (loading) {
+    return (
+      <Paper elevation={2} sx={{ p: 3, height: 400, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <Typography color="text.secondary">Loading breed distribution...</Typography>
+      </Paper>
+    );
+  }
 
   if (!chartData || chartData.length === 0) {
     return (

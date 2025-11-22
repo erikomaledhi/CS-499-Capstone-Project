@@ -309,12 +309,14 @@ const getBreedCountsOptimized = async (req, res, next) => {
   try {
     const limit = parseInt(req.query.limit, 10) || 20;
     
-    // Get breed counts from hash table (much faster than aggregation)
     const breedCounts = animalCacheService.getBreedCounts().slice(0, limit);
+    const stats = animalCacheService.getStats();
+    const totalAnimals = stats.breedIndex.totalAnimals;
 
     res.status(200).json(
       ApiResponse.success('Breed counts retrieved successfully', {
-        breedCounts,
+        breeds: breedCounts,
+        totalAnimals,
         count: breedCounts.length,
         source: 'cache'
       })
