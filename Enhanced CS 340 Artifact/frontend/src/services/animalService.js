@@ -74,6 +74,36 @@ const animalService = {
   getBreedStats: async () => {
     const response = await api.get('/animals/stats/breeds');
     return response.data;
+  },
+
+  // ============================================
+  // OPTIMIZED HASH TABLE ENDPOINTS (Enhancement 2)
+  // ============================================
+
+  /**
+   * Get breed counts/popularity (FAST - from hash table)
+   * Use this for charts, maps, and breed distribution visualization
+   */
+  getBreedCounts: async (limit = 20) => {
+    const response = await api.get(`/animals/stats/breed-counts?limit=${limit}`);
+    return response.data;
+  },
+
+  /**
+   * Get cache statistics
+   * Shows hash table performance metrics
+   */
+  getCacheStats: async () => {
+    const response = await api.get('/animals/cache/stats');
+    return response.data;
+  },
+
+  /**
+   * Search animals by name (FAST - hash table lookup)
+   */
+  searchAnimalsByName: async (searchTerm) => {
+    const response = await api.get(`/animals/search-name?q=${encodeURIComponent(searchTerm)}`);
+    return response.data;
   }
 };
 

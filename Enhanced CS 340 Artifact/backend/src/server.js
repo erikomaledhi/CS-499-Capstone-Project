@@ -9,12 +9,29 @@ const connectDB = require('./config/database');
 const { errorHandler, notFound } = require('./middleware/errorHandler');
 const authRoutes = require('./routes/authRoutes');
 const animalRoutes = require('./routes/animalRoutes');
+const animalCacheService = require('./services/animalCacheService');
 
 // Initialize app
 const app = express();
 
-// Connect to database
-connectDB();
+// Connect to database and initialize cache
+const initializeServer = async () => {
+  // Connect to database first
+  await connectDB();
+  
+  // Initialize cache service after database connection
+  try {
+    console.log('Initializing cache service...');
+    await animalCacheService.initialize();
+    console.log('Cache service initialized successfully');
+  } catch (error) {
+    console.error('Failed to initialize cache service:', error);
+    console.log('Server will continue but breed lookups may be slower');
+  }
+};
+
+// Start initialization
+initializeServer();
 
 // Security middleware
 app.use(helmet());

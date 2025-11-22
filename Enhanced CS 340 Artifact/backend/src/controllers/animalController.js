@@ -1,6 +1,7 @@
 const Animal = require('../models/Animal');
 const ApiResponse = require('../utils/apiResponse');
 const { NotFoundError, ValidationError } = require('../utils/errors');
+const animalCacheService = require('../services/animalCacheService');
 
 /**
  * @desc    Get all animals with pagination and filtering
@@ -94,12 +95,27 @@ const getAnimalById = async (req, res, next) => {
 };
 
 /**
- * @desc    Get animal by animal_id
+ * @desc    Get animal by animal_id using BST (O(log n) lookup)
  * @route   GET /api/animals/animal-id/:animal_id
  * @access  Public
+ * 
  */
 const getAnimalByAnimalId = async (req, res, next) => {
   try {
+    // Try BST lookup first (O(log n))
+    const result = animalCacheService.searchById(req.params.animal_id);
+
+    if (result && result.animal) {
+      return res.status(200).json(
+        ApiResponse.success('Animal retrieved successfully', {
+          animal: result.animal,
+          comparisons: result.comparisons,
+          source: 'bst-cache'
+        })
+      );
+    }
+
+    // Fallback to database if not in cache
     const animal = await Animal.findOne({ animal_id: req.params.animal_id });
 
     if (!animal) {
@@ -107,7 +123,10 @@ const getAnimalByAnimalId = async (req, res, next) => {
     }
 
     res.status(200).json(
-      ApiResponse.success('Animal retrieved successfully', { animal })
+      ApiResponse.success('Animal retrieved successfully', {
+        animal,
+        source: 'database'
+      })
     );
   } catch (error) {
     next(error);
@@ -122,6 +141,9 @@ const getAnimalByAnimalId = async (req, res, next) => {
 const createAnimal = async (req, res, next) => {
   try {
     const animal = await Animal.create(req.body);
+
+    // Update cache with new animal
+    animalCacheService.onAnimalCreated(animal);
 
     res.status(201).json(
       ApiResponse.created('Animal created successfully', { animal })
@@ -151,6 +173,9 @@ const updateAnimal = async (req, res, next) => {
       throw new NotFoundError('Animal');
     }
 
+    // Update cache with modified animal
+    animalCacheService.onAnimalUpdated(req.params.id, animal);
+
     res.status(200).json(
       ApiResponse.success('Animal updated successfully', { animal })
     );
@@ -171,6 +196,9 @@ const deleteAnimal = async (req, res, next) => {
     if (!animal) {
       throw new NotFoundError('Animal');
     }
+
+    // Remove from cache
+    animalCacheService.onAnimalDeleted(req.params.id);
 
     res.status(200).json(
       ApiResponse.success('Animal deleted successfully')
@@ -270,6 +298,96 @@ const getBreedStats = async (req, res, next) => {
   }
 };
 
+
+
+/**
+ * @desc    Get breed counts (sorted by popularity)
+ * @route   GET /api/animals/stats/breed-counts
+ * @access  Public
+ */
+const getBreedCountsOptimized = async (req, res, next) => {
+  try {
+    const limit = parseInt(req.query.limit, 10) || 20;
+    
+    // Get breed counts from hash table (much faster than aggregation)
+    const breedCounts = animalCacheService.getBreedCounts().slice(0, limit);
+
+    res.status(200).json(
+      ApiResponse.success('Breed counts retrieved successfully', {
+        breedCounts,
+        count: breedCounts.length,
+        source: 'cache'
+      })
+    );
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * @desc    Get cache statistics
+ * @route   GET /api/animals/cache/stats
+ * @access  Public
+ */
+const getCacheStats = async (req, res, next) => {
+  try {
+    const stats = animalCacheService.getStats();
+
+    res.status(200).json(
+      ApiResponse.success('Cache statistics retrieved successfully', { stats })
+    );
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * @desc    Rebuild cache (admin only)
+ * @route   POST /api/animals/cache/rebuild
+ * @access  Private (Admin only)
+ */
+const rebuildCache = async (req, res, next) => {
+  try {
+    const result = await animalCacheService.rebuild();
+
+    res.status(200).json(
+      ApiResponse.success('Cache rebuilt successfully', { result })
+    );
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * @desc    Search animals by name using optimized hash table lookup
+ * @route   GET /api/animals/search-name
+ * @access  Public
+ * 
+ */
+const searchAnimalsByName = async (req, res, next) => {
+  try {
+    const { q } = req.query;
+    
+    if (!q) {
+      throw new ValidationError('Search query parameter "q" is required');
+    }
+
+    // Use hash table for optimized name search
+    const animals = animalCacheService.searchByPartialName(q);
+
+    res.status(200).json(
+      ApiResponse.success(`Animals matching name search '${q}' retrieved successfully`, {
+        animals,
+        count: animals.length,
+        searchTerm: q,
+        source: 'cache'
+      })
+    );
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getAnimals,
   getAnimalById,
@@ -280,5 +398,9 @@ module.exports = {
   getWaterRescueDogs,
   getMountainRescueDogs,
   getDisasterRescueDogs,
-  getBreedStats
+  getBreedStats,
+  getBreedCountsOptimized,
+  getCacheStats,
+  rebuildCache,
+  searchAnimalsByName
 };
