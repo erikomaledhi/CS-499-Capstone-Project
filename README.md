@@ -173,8 +173,8 @@ Rebuilt the Dash interface as a modern React Single-Page Application:
 
 The enhancement process transformed my understanding of software engineering from writing code that works to designing systems that are secure and maintainable. The most significant learning occurred when I transitioned from feature-level thinking to architectural thinking. I discovered that good design is about creating predictable, organized code that reduces cognitive load.  I learned that security must be designed into the architecture from the beginning rather than added as features.  Technical challenges included debugging an infinite loop in React's useEffect hook, implementing role-based UI rendering, and handling messy production data that contained asterisks and numeric values like "019" instead of names. 
 
-**[View Original Artifact](./Original%20CS%20340%20Artifact)**  
-**[View Enhanced Artifact](./Enhanced%20CS%20340%20Artifact)**
+**[View Original Artifact](https://github.com/erikomaledhi/CS-499-Capstone-Project/tree/main/Original%20CS%20340%20Artifact)**  
+**[View Enhanced Artifact](https://github.com/erikomaledhi/CS-499-Capstone-Project/tree/main/Enhanced%20CS%20340%20Artifact)**
 
 ---
 
@@ -222,7 +222,7 @@ The enhancement process transformed my understanding of data structures from the
 - **Hash Table Breed Search:** 102,481x improvement for exact matches
 - **Hash Table Partial Search:** 446x improvement for partial string matching
 
-**[View Implementation](./Enhanced%20CS%20340%20Artifact)**
+**[View Implementation](https://github.com/erikomaledhi/CS-499-Capstone-Project/tree/main/Enhanced%20CS%20340%20Artifact)**
 
 ---
 
@@ -300,8 +300,8 @@ Goals: id, user_id, target_weight, target_date
 
 The enhancement process deepened my understanding of the differences between relational and document-based storage.  The most significant learning occurred when I moved from thinking about data in normalized tables with foreign keys to understanding how document databases optimize for access patterns through denormalization and embedding. I learned that NoSQL schema design requires analyzing query patterns first.  Implementing the embedded document pattern taught me that storing weight entries directly within the user document eliminates JOIN operations and improves read performance. Technical challenges included discovering that Realm's automatic connection management meant I needed to remove databaseHelper. close() calls from four Activity files. I also debugged why new users saw all previous entries, which was caused by addSampleEntries() adding hardcoded demo data. I learned that Realm objects are live and auto-updating but cannot be passed between threads. 
 
-**[View Original Artifact](./Original%20CS%20360%20Artifact)**  
-**[View Enhanced Artifact](./Enhanced%20CS%20360%20Artifact)**
+**[View Original Artifact](https://github.com/erikomaledhi/CS-499-Capstone-Project/tree/main/Original%20CS%20360%20Artifact)**  
+**[View Enhanced Artifact](https://github.com/erikomaledhi/CS-499-Capstone-Project/tree/main/Enhanced%20CS%20360%20Artifact)**
 
 ---
 
