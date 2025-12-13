@@ -1,0 +1,12 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.WeightTrackingApp" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- blue theme colors -->
+        <item name="colorPrimary">#007AFF</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorPrimaryContainer">#E3F2FD</item>
+        <item name="colorOnPrimaryContainer">#0056CC</item>
+    </style>
+
+    <style name="Theme.WeightTrackingApp" parent="Base.Theme.WeightTrackingApp" />
+</resources>

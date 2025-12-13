@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+
+    <!-- Push Notification Permission -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <!-- Alarm permissions for scheduling reminders -->
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
+
+    <application
+        android:name=".WeightTrackerApplication"
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/Theme.WeightTrackingApp">
+
+        <!-- LOGIN ACTIVITY-->
+        <activity
+            android:name=".LoginActivity"
+            android:exported="true"
+            android:theme="@style/Theme.WeightTrackingApp">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- MAIN ACTIVITY-->
+        <activity
+            android:name=".MainActivity"
+            android:exported="false"
+            android:theme="@style/Theme.WeightTrackingApp" />
+
+        <!-- DAILY ENTRIES ACTIVITY -->
+        <activity
+            android:name=".DailyEntriesActivity"
+            android:exported="false"
+            android:theme="@style/Theme.WeightTrackingApp" />
+
+
+        <!-- SETTINGS ACTIVITY -->
+        <activity
+            android:name=".SettingsActivity"
+            android:exported="false"
+            android:theme="@style/Theme.WeightTrackingApp" />
+
+        <!-- Push Permission Activity-->
+        <activity
+            android:name=".PushPermissionActivity"
+            android:exported="false"
+            android:theme="@style/Theme.WeightTrackingApp" />
+
+        <!-- Reminder Receiver-->
+        <receiver
+            android:name=".ReminderReceiver"
+            android:exported="false" />
+
+
+    </application>
+
+</manifest>
